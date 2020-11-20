@@ -19,7 +19,7 @@ BEGIN = "lib"
 data = {}
 
 
-def get_files():
+def getFiles():
     archivos_txt = []
     for base, dirs, files in os.walk(RAIZ):
         for file in files:
@@ -29,47 +29,42 @@ def get_files():
     return archivos_txt
 
 
-def remove_espacial_character(txt):
+def removeSpecialCharacters(txt):
     characters = ("\"", "\'", "º", "&")
     for character in characters:
         txt = txt.replace(character, "")
     return txt
 
 
-def remove_punctuation(text):
+def removePunctuation(text):
     return re.sub('[%s]' % re.escape(string.punctuation), ' ', text)
 
 
 def treat_data(txt):
     list_normalize=[]
     #removemos caracteres especiales y signos de puntuacion
-    texto = remove_espacial_character(remove_punctuation(txt))
+    texto = removeSpecialCharacters(removePunctuation(txt))
     tokens = nltk.word_tokenize(texto)
     #Filtrar los stopwords
     stoplist = stopwords.words("spanish")
     stoplist += ['?', 'aqui','.',',','»','«','â','ã','>','<','(',')','º']
     # tokens_clean = tokens.copy()
     filtered = [w for w in tokens if not w in stoplist and len(w) >= 3]
-
-    # for token in tokens:
-    # 	if token in stoplist:
-    # 			tokens_clean.remove(token)
-
     #Reduccion de Tokens(Normalizacion)
     for p in filtered:
         list_normalize.append(stemmer.stem(p))
-            
+
     return list_normalize
 
 
 
-def buil_index(archivos_txt):
-	
+def buildIndex(archivos_txt):
+
 	diccionario={}
 	for arch in archivos_txt:
 		#lista de la data tratada por archivo
 		token_data = treat_data((open(arch, encoding='utf-8').read().lower()))
-		
+
 		#creaacion del diccionario del indice
 		for p in token_data:
 			if not p in diccionario:
@@ -91,7 +86,7 @@ def buil_index(archivos_txt):
 	return data
 
 
-def output_data(outputfile, data):
+def outputData(outputfile, data):
 	#imprimos la data en el formato key : [books]
     out = open(outputfile, 'w')
     out.reconfigure(encoding='utf-8')
@@ -176,9 +171,9 @@ def AND_NOT(list1, list2):
 
 def main():
 
-    files = get_files()
-    data = buil_index(files)
-    output_data("stdout.txt", data)
+    files = getFiles()
+    data = buildIndex(files)
+    outputData("stdout.txt", data)
     print("QUERY1")
     recovery(AND(AND(L('Frodo'), L('Gollum')), L('Gandalf')))
     print("QUERY2")
