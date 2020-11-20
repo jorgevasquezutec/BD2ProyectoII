@@ -6,7 +6,7 @@ from tokenpy import *
 from itertools import chain
 from nltk import FreqDist, sent_tokenize, word_tokenize # $ pip install nlt
 import linecache
-
+import json
 # line = linecache.getline(filename, 2)
 # print(line)
 
@@ -21,6 +21,15 @@ def getFiles(FILES,EXTENSION,BEGIN):
             if fich.endswith(EXTENSION) and BEGIN in fich:
                 archivos_txt.append(fich)
     return archivos_txt
+
+def createChunks(file):
+    name=(os.path.splitext(os.path.basename(file))[0])
+    with open(file) as infile:
+        o = json.load(infile)
+        chunkSize = CHUNKSIZE
+        for i in range(0, len(o), chunkSize):
+            with open(CHUNKFILE+ name+"-"+str(i//chunkSize)+".json", 'w') as outfile:
+                json.dump(o[i:i+chunkSize], outfile)
 
 def createIndex(file,index):
     diccionario={}
@@ -71,8 +80,11 @@ class IndexFile:
 
 
 def main():
-    files = getFiles(FILES,EXTENSION,BEGIN)
-    for cnt,file in enumerate(files):
+    # files = getFiles(FILES,EXTENSION,BEGIN)
+    # for file in files:
+    #     createChunks(file)
+    chunks=getFiles(CHUNKFILE,EXTENSION,BEGIN)
+    for cnt,file in enumerate(chunks):
         createIndex(file,str(cnt) + 'tf_df' + '.json')
 
 

@@ -38,15 +38,34 @@ def treatData(txt):
 
     return list_normalize
 
-def outputData(outputfile, data):
-	#imprimos la data en el formato key : [books]
-    data_to_print = sorted(data.items())
-    import json
-    with open(outputfile, 'w') as fp:
-        fp.reconfigure(encoding='utf-8')
-        json.dump(data_to_print, fp)
-
-
-
+# def outputData(outputfile, data):
+# 	#imprimos la data en el formato key : [books]
+#     data_to_print = sorted(data.items())
+#     import json
+#     with open(outputfile, 'w') as fp:
+#         fp.reconfigure(encoding='utf-8')
+#         for data in data_to_print:
+#             json.dump(data, fp)
+# 
+    
     # for k, v in data_to_print:
     #     print(k, " : ", v, file=out)
+def outputData(outputfile, data):
+	#imprimos la data en el formato key : [books]
+    out = open(outputfile, 'w')
+    out.reconfigure(encoding='utf-8')
+
+    data_to_print = sorted(data.items())
+    file = open(outputfile, "w")
+
+    for data in data_to_print:
+        print(json.dumps(data,ensure_ascii=False), file=out)
+
+
+# import json
+# with open('prueba/tweets_2018-08-07.json') as infile:
+#   o = json.load(infile)
+#   chunkSize = 1000
+#   for i in range(0, len(o), chunkSize):
+#     with open('file_' + str(i//chunkSize) + '.json', 'w') as outfile:
+#       json.dump(o[i:i+chunkSize], outfile)
