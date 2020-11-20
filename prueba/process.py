@@ -83,16 +83,14 @@ def main():
     # files = getFiles(FILES,EXTENSION,BEGIN)
     # for file in files:
     #     createChunks(file)
-    chunks=getFiles(CHUNKFILE,EXTENSION,BEGIN)
-    for cnt,file in enumerate(chunks):
-        createIndex(file,str(cnt) + 'tf_df' + '.json')
+    # chunks=getFiles(CHUNKFILE,EXTENSION,BEGIN)
+    # for cnt,file in enumerate(chunks):
+    #     createIndex(file,str(cnt) + 'tf_df' + '.json')
 
-
-
-    # indexFile=getFiles(OUTPUTFILE,EXTENSIONOUT,"tf_df")
-    # objectIndex=[]
-    # for file in indexFile:
-    #     objectIndex.append(IndexFile(file))
+    indexFile=getFiles(OUTPUTFILE,EXTENSIONOUT,"tf_df")
+    objectIndex=[]
+    for file in indexFile:
+        objectIndex.append(IndexFile(file))
 
 
     #tenngo que crear un minhead solo con el word
