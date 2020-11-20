@@ -95,12 +95,12 @@ def main():
     #     createIndex(file,str(cnt) + 'tf_df' + '.json')
 
     indexFile=getFiles(OUTPUTFILE,EXTENSIONOUT,"tf_df")
-    print(len(indexFile))
-    # objectIndex=[]
-    # for file in indexFile:
-    #     objectIndex.append(IndexFile(file))
+    # print(len(indexFile))
+    objectIndex=[]
+    for file in indexFile:
+        objectIndex.append(IndexFile(file))
 
-    # print(objectIndex)
+    print(objectIndex)
 
     #tenngo que crear un minhead solo con el word
 
