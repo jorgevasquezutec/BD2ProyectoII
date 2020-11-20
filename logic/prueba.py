@@ -7,9 +7,15 @@
 #       json.dump(o[i:i+chunkSize], outfile)
 
 
-import pandas as pd
-# import json 
-chunk=pd.read_json('out2/0tf_df.json', lines=True, chunksize=5,nrows=100)
-print(chunk.open_stream)
+# import pandas as pd
+# # import json 
+# chunk=pd.read_json('prueba/prueba.json', lines=True, chunksize=5)
+# # data=next(x,None)
+# while(data is not None):
+#     print(data)
+#     data=next(x,None)
+    
+
+# print(chunk.__next__)
 # d1=pd.read_json('out2/0tf_df.json', lines=True, chunksize=100)
 

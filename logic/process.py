@@ -1,121 +1,169 @@
 import os
 from os.path import isfile, join
-import re
-import string
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem import SnowballStemmer
-import sys
-from constants import *
 import pandas as pd
-
+from constants import *
+from tokenpy import *
 from itertools import chain
-from nltk import FreqDist, sent_tokenize, word_tokenize # $ pip install nltk
+from nltk import FreqDist, sent_tokenize, word_tokenize # $ pip install nlt
+import linecache
+import json
+import heapq
+# line = linecache.getline(filename, 2)
+# print(line)
 
+# W1,(idf(W1)  	Doc1: tf(W1,Doc1), Doc2: tf(W1,Doc2)
+# W2,(idf(W1)  	Doc1: tf(W2,Doc1), Doc7: tf(W2,Doc7)
 
-
-nltk.download('punkt')
-nltk.download('stopwords')
-stemmer = SnowballStemmer('spanish')
-
-
-def remove_espacial_character(txt):
-    characters = ("\"", "\'", "º", "&")
-    for character in characters:
-        txt = txt.replace(character, "")
-    return txt
-
-
-def remove_punctuation(text):
-    return re.sub('[%s]' % re.escape(string.punctuation), ' ', text)
-
-
-def get_files():
+def getFiles(FILES,EXTENSION,BEGIN):
     archivos_txt = []
-    for base, dirs, files in os.walk(RAIZ):
+    for base, dirs, files in os.walk(FILES):
         for file in files:
             fich = join(base, file)
             if fich.endswith(EXTENSION) and BEGIN in fich:
                 archivos_txt.append(fich)
     return archivos_txt
 
-def treat_data(txt):
-    list_normalize=[]
-    #removemos caracteres especiales y signos de puntuacion
-    texto = remove_espacial_character(remove_punctuation(txt))
-    tokens = nltk.word_tokenize(texto)
-    #Filtrar los stopwords
-    stoplist = stopwords.words("spanish")
-    stoplist += ['?', 'aqui','.',',','»','«','â','ã','>','<','(',')','º']
-	# tokens_clean = tokens.copy()
-    filtered = [w for w in tokens if not w in stoplist and len(w) >= 3]
-	# for token in tokens:
-	# 	if token in stoplist:
-	# 			tokens_clean.remove(token)
-	#Reduccion de Tokens(Normalizacion)
-    for p in filtered:
-        list_normalize.append(stemmer.stem(p))
-            
-    return list_normalize
+def createChunks(file):
+    name=(os.path.splitext(os.path.basename(file))[0])
+    with open(file) as infile:
+        o = json.load(infile)
+        chunkSize = CHUNKSIZE
+        for i in range(0, len(o), chunkSize):
+            with open(CHUNKFILE+ name+"-"+str(i//chunkSize)+".json", 'w') as outfile:
+                json.dump(o[i:i+chunkSize], outfile)
+
+def createIndex(file,index):
+    diccionario={}
+    df = pd.read_json(file)
+    for i, r in df.iterrows():
+        idi = r.values[0]
+        text = r.values[2]
+        words = chain.from_iterable(map(word_tokenize, treatData(text)))
+        freq = FreqDist(map(str.casefold, words))
+        for w1,w2 in freq.items():
+            obj={"tweet":idi,"fre":w2}
+            if w1 in diccionario:
+                diccionario[w1].append(obj)
+            else:
+                diccionario[w1] = []
+                diccionario[w1].append(obj)
+
+    outputData(OUTPUTFILE+index, diccionario)
+
+
+def mergeFiles():
+    temp=[]
 
 
 
-def buil_index(archivos_txt):
-	
-	diccionario={}
-	for arch in archivos_txt:
-		#lista de la data tratada por archivo
-		token_data = treat_data((open(arch, encoding='utf-8').read().lower()))
-		
-		#creaacion del diccionario del indice
-		for p in token_data:
-			if not p in diccionario:
-				diccionario[p] = {}
-				diccionario[p]['books'] = []
-			if arch not in diccionario[p]['books']:
-				diccionario[p]['books'].append(arch)
+class IndexFile:
 
-		#Obtenemos los 500 keys con el mayor numero de books (500 términos más frecuentes)
-		sd = sorted(diccionario, key=lambda v: len(
-			diccionario[v]['books']), reverse=True)[:500]
+    def __init__(self, nameFile):
+        self.name = nameFile
+        self.iterator = iter(pd.read_json(nameFile, lines=True, chunksize=BLOCK)) 
+        self.data=next(self.iterator,None)
 
-		#filtramos solo esos keys
-		for k in sd:
-			if not k in data:
-				data[k] = []
-			data[k] = diccionario[k]['books']
+    def getNext(self):
+        self.data=next(self.iterator,None)
+        if(self.data is not None):
+            return True
+        return False
+        # self.data=
+        # self.size=len()
 
-	return data
+    # def getWord(self):
+    #     text=linecache.getline(self.name,  self.iteration)
+    #     return text.split(':')[0].strip()
+
+    # def parseObject(self):
+    #     obj={}
+    #     text=linecache.getline(self.name,  self.iteration)
+    #     tempSplit = text.split('{')
+    #     for i in range(1, len(tempSplit)):
+    #         finalSplit = tempSplit[i].split('}')[0].split(',')
+    #         obj[finalSplit[0].split(':')[1].strip()] = int(finalSplit[1].split(':')[1].strip())
+    #     return obj
 
 
-def output_data(outputfile, data):
-	#imprimos la data en el formato key : [books]
-    out = open(outputfile, 'w')
-    out.reconfigure(encoding='utf-8')
-
-    data_to_print = sorted(data.items())
-    file = open(outputfile, "w")
-
-    for k, v in data_to_print:
-        print(k, " : ", v, file=out)
 
 def main():
+    # files = getFiles(FILES,EXTENSION,BEGIN)
+    # for file in files:
+    #     createChunks(file)
+    # chunks=getFiles(CHUNKFILE,EXTENSION,BEGIN)
+    # for cnt,file in enumerate(chunks):
+    #     createIndex(file,str(cnt) + 'tf_df' + '.json')
 
-    # files = get_files()
-    # data = buil_index(files)
-    # output_data("stdout.txt", data)
-    df_f = pd.read_json('prueba/tweets_2018-08-07.json')
-    print(treat_data(df_f['text'][0]))
+    indexFile=getFiles(OUTPUTFILE,EXTENSIONOUT,"tf_df")
+    print(len(indexFile))
+    # objectIndex=[]
+    # for file in indexFile:
+    #     objectIndex.append(IndexFile(file))
 
+    # print(objectIndex)
 
-    words = chain.from_iterable(map(word_tokenize, treat_data(df_f['text'][0])))
-    freq = FreqDist(map(str.casefold, words))
-    freq.pprint()
+    #tenngo que crear un minhead solo con el word
 
 if __name__ == "__main__":
     main()
 
 
 
+
+
+
+
+# def mergeTables(self):
+# 		class TableClass:
+# 			def __init__(self, tableName):
+# 				self.name = tableName
+# 				self.sizeOfChunk = SORTED_CHUNK
+# 				self.last = False
+# 				self.empty = False
+# 				self.iteration = 0
+# 				self.orderedList = (pd.read_csv(tableName,skiprows = self.iteration, nrows = self.sizeOfChunk)).values.tolist()
+# 				self.size = len(pd.read_csv(tableName))
+
+# 			def getFirst(self):
+# 				return self.orderedList[0][0]
+
+# 			def __lt__(self,other):
+# 				return str(self.getFirst()) < str(other.getFirst())
+
+# 			def updateList(self):
+# 				self.iteration += 1
+# 				if((self.iteration+1)*self.sizeOfChunk-1 >= self.size):
+# 					self.last = True
+# 				skip = self.iteration * self.sizeOfChunk
+# 				self.orderedList = (pd.read_csv(self.name,skiprows = skip, nrows = self.sizeOfChunk)).values.tolist()
+
+# 			def popFirst(self):
+# 				value = self.orderedList.pop(0)
+# 				if(len(self.orderedList) == 0 and self.last == True):
+# 					self.empty = True
+# 				elif(len(self.orderedList) == 0):
+# 					self.updateList()
+# 				return value
+
+# 		tableClasses = []
+# 		for i in os.listdir(PATH + 'chunks'):
+# 			if i.endswith('tf_df.csv'):
+# 				tableClasses.append(TableClass(PATH + 'chunks/'+ i))
+
+# 		heapq.heapify(tableClasses)
+# 		while(len(tableClasses) > 0):
+# 			tmp = []
+# 			tmp = tableClasses[0].popFirst()
+# 			tmp[1] = ast.literal_eval(tmp[1])
+# 			while(tableClasses[0].empty == True):
+# 				tableClasses.pop(0)
+# 			heapq.heapify(tableClasses)
+# 			while(tableClasses[0].getFirst() == tmp[0]):
+# 				tmp[1].update(ast.literal_eval(tableClasses[0].popFirst()[1]))
+# 				while(tableClasses[0].empty == True):
+# 					tableClasses.pop(0)
+# 				heapq.heapify(tableClasses)
+# 			self.writeLine(PATH + "merged.csv",tmp)
+# 			heapq.heapify(tableClasses)
 
 

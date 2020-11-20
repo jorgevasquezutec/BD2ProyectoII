@@ -1,3 +1,9 @@
-RAIZ = './prueba'
+RAIZ = './logic'
 EXTENSION = ".json"
 BEGIN = "tweets"
+FILES= './clean'
+BLOCK=1000
+OUTPUTFILE='./out2/'
+EXTENSIONOUT = ".json"
+CHUNKSIZE=2000
+CHUNKFILE='./chunK/'
