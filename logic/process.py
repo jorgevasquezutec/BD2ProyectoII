@@ -23,6 +23,17 @@ from tokenpy import *
 #blokc=20000
 # W2,(idf(W1)  	Doc1: tf(W2,Doc1), Doc7: tf(W2,Doc7)
 
+def buildFinalIndex(d):
+    of = "test.json"
+    for word, data in d.items():
+        w = {word : {}}
+        w[word]["idf"] = TWEETCOUNT/len(data)
+        w[word]["tweets"] = {}
+        for tweet in data:
+            w[word]["tweets"][tweet["tweet"]] = 1 + math.log10(tweet['fre'])
+        finalOutput(of, w)
+
+
 def getFiles(FILES,EXTENSION,BEGIN):
     archivos_txt = []
     for base, dirs, files in os.walk(FILES):
@@ -80,7 +91,6 @@ class IndexFile:
         return (data[1], data[0])
 
     def updateCurrent(self):
-        print(f"Updating current {self.current+1}")
         self.current += 1
         if self.current >= len(self.data.index):
             self.current = 0
@@ -157,16 +167,17 @@ def main():
         currentWord = temp.getWord()
 
         if currentWord != lastWord:
+            if (len(merge) >= 2000):
+                buildFinalIndex(merge)
+                merge = {}
             merge[currentWord] = temp.getCurrentData()[1]
-        merge[currentWord].extend(temp.getCurrentData()[1])
+        else:
+            merge[currentWord].extend(temp.getCurrentData()[1])
 
         if (temp.updateCurrent()):
             heapq.heappush(heap, temp)
         lastWord = currentWord
-
-    import json
-    with open('test.json', 'w') as fp:
-        json.dump(merge, fp)
+    buildFinalIndex(merge)
 
     #tenngo que crear un minhead solo con el word
 
