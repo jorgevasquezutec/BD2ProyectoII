@@ -1,5 +1,6 @@
 import re
 import string
+import os
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
@@ -46,8 +47,8 @@ def treatData(txt):
 #         fp.reconfigure(encoding='utf-8')
 #         for data in data_to_print:
 #             json.dump(data, fp)
-# 
-    
+#
+
     # for k, v in data_to_print:
     #     print(k, " : ", v, file=out)
 def outputData(outputfile, data):
@@ -61,6 +62,14 @@ def outputData(outputfile, data):
     for data in data_to_print:
         print(json.dumps(data,ensure_ascii=False), file=out)
 
+def finalOutput(outputfile, data):
+    if not os.path.isfile(outputfile):
+        out = open(outputfile, 'w')
+        out.reconfigure(encoding='utf-8')
+    else:
+        out = open(outputfile, 'a')
+
+    print(json.dumps(data,ensure_ascii=False), file=out)
 
 # import json
 # with open('prueba/tweets_2018-08-07.json') as infile:
