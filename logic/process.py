@@ -13,6 +13,7 @@ from nltk import FreqDist, sent_tokenize, word_tokenize  # $ pip install nlt
 from constants import *
 from tokenpy import *
 
+
 # line = linecache.getline(filename, 2)
 # print(line)
 
@@ -40,9 +41,10 @@ def createChunks(file):
             with open(CHUNKFILE+ name+"-"+str(i//chunkSize)+".json", 'w') as outfile:
                 json.dump(o[i:i+chunkSize], outfile)
 
-def createIndex(file,index):
+def createIndex(file):
     diccionario={}
     df = pd.read_json(file)
+    name=(os.path.splitext(os.path.basename(file))[0])
     for i, r in df.iterrows():
         idi = r.values[0]
         text = r.values[2]
@@ -55,7 +57,7 @@ def createIndex(file,index):
             else:
                 diccionario[w1] = [obj]
 
-    outputData(OUTPUTFILE+index, diccionario)
+    outputData(OUTPUTFILE+name+".json", diccionario)
 
 def mergeFiles():
     temp=[]
@@ -132,9 +134,9 @@ def main():
     #     createChunks(file)
     # chunks=getFiles(CHUNKFILE,EXTENSION,BEGIN)
     # for cnt,file in enumerate(chunks):
-    #     createIndex(file,str(cnt) + 'tf_df' + '.json')
+    #     createIndex(file)
 
-    indexFile=getFiles(OUTPUTFILE,EXTENSIONOUT,"tf_df")
+    indexFile=getFiles(OUTPUTFILE,EXTENSIONOUT,"tweets")
     # print(len(indexFile))
     objectIndex=[]
     for file in indexFile:
@@ -144,6 +146,7 @@ def main():
     # print(objectIndex)
     heap = []
     for i in range(3):
+        print(objectIndex[i].name)
         heapq.heappush(heap, objectIndex[i])
 
     lastWord = ""

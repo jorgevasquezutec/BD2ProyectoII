@@ -1,3 +1,0 @@
-1.numero de lineas por bloque.
-2. guardo termino,doc1 y frec.
-3. hago merge interno y lo guardo en disco.
