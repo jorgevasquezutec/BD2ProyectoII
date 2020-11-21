@@ -30,13 +30,15 @@ def CountFrequency(arr):
 
 def buildFinalIndex(d):
     of = "index/merge.json"
+    text=""
     for word, data in d.items():
         w = {word : {}}
         w[word]["idf"] = TWEETCOUNT/len(data)
         w[word]["tweets"] = {}
         for tweet in data:
-            w[word]["tweets"][tweet["tweet"]] = 1 + math.log10(tweet['frec'])
-        finalOutput(of, w)
+            w[word]["tweets"][tweet["tweet"]] = 1 + math.log10(tweet['fre'])
+        text+=json.dumps(w,ensure_ascii=False)+"\n"
+    finalOutput(of,text)
 
 
 def getFiles(FILES,EXTENSION,BEGIN):
@@ -69,7 +71,7 @@ def createIndex(file):
         for (key, value) in freq.items():
             my_dict = {}
             my_dict["tweet"] = idi
-            my_dict["frec"] = value
+            my_dict["fre"] = value
             if key not in diccionario:
                 diccionario[key]=[my_dict]
             else:
@@ -147,7 +149,7 @@ def main():
     # print(objectIndex[0].getCurrentData()[1][0]['fre'])
     # print(objectIndex)
     heap = []
-    for i in range(len(objectIndex)):
+    for i in range(3):
         print(objectIndex[i].name)
         heapq.heappush(heap, objectIndex[i])
 

@@ -71,7 +71,7 @@ def finalOutput(outputfile, data):
     else:
         out = open(outputfile, 'a')
 
-    print(json.dumps(data,ensure_ascii=False), file=out)
+    print(data, file=out)
 
 # import json
 # with open('prueba/tweets_2018-08-07.json') as infile:
