@@ -12,6 +12,7 @@ from nltk import FreqDist, sent_tokenize, word_tokenize  # $ pip install nlt
 
 from constants import *
 from tokenpy import *
+import collections
 
 
 # line = linecache.getline(filename, 2)
@@ -23,14 +24,18 @@ from tokenpy import *
 #blokc=20000
 # W2,(idf(W1)  	Doc1: tf(W2,Doc1), Doc7: tf(W2,Doc7)
 
+def CountFrequency(arr): 
+    return collections.Counter(arr)
+
+
 def buildFinalIndex(d):
-    of = "test.json"
+    of = "index/merge.json"
     for word, data in d.items():
         w = {word : {}}
         w[word]["idf"] = TWEETCOUNT/len(data)
         w[word]["tweets"] = {}
         for tweet in data:
-            w[word]["tweets"][tweet["tweet"]] = 1 + math.log10(tweet['fre'])
+            w[word]["tweets"][tweet["tweet"]] = 1 + math.log10(tweet['frec'])
         finalOutput(of, w)
 
 
@@ -59,20 +64,18 @@ def createIndex(file):
     for i, r in df.iterrows():
         idi = r.values[0]
         text = r.values[2]
-        words = chain.from_iterable(map(word_tokenize, treatData(text)))
-        freq = FreqDist(map(str.casefold, words))
-        for w1,w2 in freq.items():
-            obj={"tweet":idi,"fre":w2}
-            if w1 in diccionario:
-                diccionario[w1].append(obj)
+        data=treatData(text)
+        freq = CountFrequency(data)
+        for (key, value) in freq.items():
+            my_dict = {}
+            my_dict["tweet"] = idi
+            my_dict["frec"] = value
+            if key not in diccionario:
+                diccionario[key]=[my_dict]
             else:
-                diccionario[w1] = [obj]
-
+                diccionario[key].append(my_dict)
+    
     outputData(OUTPUTFILE+name+".json", diccionario)
-
-def mergeFiles():
-    temp=[]
-
 
 
 class IndexFile:
@@ -105,18 +108,7 @@ class IndexFile:
     def __lt__(self, other):
         return self.getCurrentData()[0] < other.getCurrentData()[0]
 
-    # def getWord(self):
-    #     text=linecache.getline(self.name, 1)
-    #     return text.split(':')[0].strip()
 
-    # def parseObject(self):
-    #     obj={}
-    #     text=linecache.getline(self.name, 1)
-    #     tempSplit = text.split('{')
-    #     for i in range(1, len(tempSplit)):
-    #         finalSplit = tempSplit[i].split('}')[0].split(',')
-    #         obj[finalSplit[0].split(':')[1].strip()] = int(finalSplit[1].split(':')[1].strip())
-    #     return obj
 
 def show_tree(tree, total_width=60, fill=' '):
     """Pretty-print a tree.
@@ -155,7 +147,7 @@ def main():
     # print(objectIndex[0].getCurrentData()[1][0]['fre'])
     # print(objectIndex)
     heap = []
-    for i in range(3):
+    for i in range(len(objectIndex)):
         print(objectIndex[i].name)
         heapq.heappush(heap, objectIndex[i])
 
@@ -167,7 +159,7 @@ def main():
         currentWord = temp.getWord()
 
         if currentWord != lastWord:
-            if (len(merge) >= 2000):
+            if (len(merge) >= CHUNKSIZE):
                 buildFinalIndex(merge)
                 merge = {}
             merge[currentWord] = temp.getCurrentData()[1]

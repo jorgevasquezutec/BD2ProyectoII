@@ -58,9 +58,11 @@ def outputData(outputfile, data):
 
     data_to_print = sorted(data.items())
     file = open(outputfile, "w")
-
+    result=""
     for data in data_to_print:
-        print(json.dumps(data,ensure_ascii=False), file=out)
+        result+=json.dumps(data,ensure_ascii=False)+"\n"
+    print(result,file=out)
+
 
 def finalOutput(outputfile, data):
     if not os.path.isfile(outputfile):
