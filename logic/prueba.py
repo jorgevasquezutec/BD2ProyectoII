@@ -56,41 +56,52 @@
 # heapq.heappush(heap, (1,'one', 1))
 
 # show_tree(heap)
-from process import *
-import collections
+# from process import *
+# import collections
 
-def CountFrequency(arr): 
-    return collections.Counter(arr)
-
-
-file="chunk/tweets_2018-09-15-2.json"
-df=pd.read_json(file)
-diccionario={}
-
-docid="121212121"
-text="hola hola como estas me llamo llamo javier costa y yo soy juan gablriel"
-data=treatData(text)
-freq = CountFrequency(data)
-for (key, value) in freq.items():
-        my_dict = {}
-        my_dict["tweet"] = docid
-        my_dict["frec"] = value
-        if key not in diccionario:
-            diccionario[key]=[my_dict]
-        else:
-            diccionario[key].append(my_dict)
-# print(diccionario)
-data_to_print = sorted(diccionario.items())
-print(data_to_print)
-result=""
-for data in data_to_print:
-    result+=json.dumps(data)+"\n"
-
-with open('logic/data.json', 'w') as outfile:
-    print(result,file=outfile)
+# def CountFrequency(arr): 
+#     return collections.Counter(arr)
 
 
+# file="chunk/tweets_2018-09-15-2.json"
+# df=pd.read_json(file)
+# diccionario={}
 
+# docid="121212121"
+# text="hola hola como estas me llamo llamo javier costa y yo soy juan gablriel"
+# data=treatData(text)
+# freq = CountFrequency(data)
+# for (key, value) in freq.items():
+#         my_dict = {}
+#         my_dict["tweet"] = docid
+#         my_dict["frec"] = value
+#         if key not in diccionario:
+#             diccionario[key]=[my_dict]
+#         else:
+#             diccionario[key].append(my_dict)
+# # print(diccionario)
+# data_to_print = sorted(diccionario.items())
+# print(data_to_print)
+# result=""
+# for i,data in enumerate(data_to_print):
+#     result+=json.dumps(data)+"\n"
+
+# with open('logic/data.json', 'w') as outfile:
+#     print(result,file=outfile)
+
+
+# import pandas as pd
+# import json 
+# chunk=pd.read_json('logic/data.json',lines=True)
+
+# data={"data1":"value1","data2":"value2","data3":"value3"}
+# print(list(data.keys())[0])
+
+# text=""
+# for i,obj in enumerate(chunk.items()):
+#     text+=json.dumps(obj)+"\n" if i!=len(chunk)-1 else json.dumps(obj);
+
+# print(text)
 
 
 # name=(os.path.splitext(os.path.basename(file))[0])
@@ -113,3 +124,25 @@ with open('logic/data.json', 'w') as outfile:
 
 
 
+# import constants 
+# import importlib
+
+# print(constants.WORDS)
+
+# with open('logic/constants.py', 'w') as f:
+#     f.write('WORDS = 100')
+
+# importlib.reload(constants)
+# print(constants.WORDS)
+import linecache
+import json
+
+indexfile="index/index.json"
+line=linecache.getline(indexfile, 1)
+res = json.loads(line)
+
+
+
+
+
+print(res)

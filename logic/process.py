@@ -28,17 +28,22 @@ def CountFrequency(arr):
     return collections.Counter(arr)
 
 
-def buildFinalIndex(d):
-    of = "index/merge.json"
+def buildFinalIndex(d,index_file):
+    # word, data
     text=""
-    for word, data in d.items():
-        w = {word : {}}
-        w[word]["idf"] = TWEETCOUNT/len(data)
-        w[word]["tweets"] = {}
-        for tweet in data:
-            w[word]["tweets"][tweet["tweet"]] = 1 + math.log10(tweet['fre'])
-        text+=json.dumps(w,ensure_ascii=False)+"\n"
-    finalOutput(of,text)
+    for i,data in enumerate(d.items()):
+        w = {data[0] : {}}
+        w[data[0]]["idf"] = math.log10(TWEETCOUNT/len(data[1]))
+        w[data[0]]["tweets"] = {}
+        for tweet in data[1]:
+            w[data[0]]["tweets"][tweet["tweet"]] = math.log10(1 + tweet['fre'])
+        text+=json.dumps(w,ensure_ascii=False);
+        text+="\n" if i!=len(d.items())-1 else "";
+    finalOutput(index_file,text)
+
+def builSameIndex(d,name):
+    outputData(OUTINDEX+name+".json", d)
+
 
 
 def getFiles(FILES,EXTENSION,BEGIN):
@@ -155,14 +160,20 @@ def main():
 
     lastWord = ""
     merge = {}
+    index_file=0
+    of = "index/"+str(index_file)+"merge.json"
+    indexKey={}
 
     while len(heap) > 0:
         temp = heapq.heappop(heap)
         currentWord = temp.getWord()
 
         if currentWord != lastWord:
-            if (len(merge) >= CHUNKSIZE):
-                buildFinalIndex(merge)
+            if (len(merge) >= FILE_EXTENSION):
+                buildFinalIndex(merge,of)
+                index_file=index_file+1
+                of = "index/"+str(index_file)+"merge.json"
+                indexKey[list(merge.keys())[0]]=of
                 merge = {}
             merge[currentWord] = temp.getCurrentData()[1]
         else:
@@ -171,7 +182,10 @@ def main():
         if (temp.updateCurrent()):
             heapq.heappush(heap, temp)
         lastWord = currentWord
-    buildFinalIndex(merge)
+    buildFinalIndex(merge,of)
+    indexKey[list(merge.keys())[0]]=of
+    outputData("index/index.json",indexKey)
+
 
     #tenngo que crear un minhead solo con el word
 

@@ -59,8 +59,9 @@ def outputData(outputfile, data):
     data_to_print = sorted(data.items())
     file = open(outputfile, "w")
     result=""
-    for data in data_to_print:
-        result+=json.dumps(data,ensure_ascii=False)+"\n"
+    for i,data in enumerate(data_to_print):
+        result+=json.dumps(data,ensure_ascii=False)
+        result+="\n" if i!=len(data_to_print)-1 else "";
     print(result,file=out)
 
 
