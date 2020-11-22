@@ -153,7 +153,7 @@ def generateMergeIndex():
     # print(objectIndex[0].getCurrentData()[1][0]['fre'])
     # print(objectIndex)
     heap = []
-    for i in range(3):
+    for i in range(len(objectIndex)):
         print(objectIndex[i].name)
         heapq.heappush(heap, objectIndex[i])
 

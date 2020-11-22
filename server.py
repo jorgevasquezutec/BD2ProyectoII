@@ -20,7 +20,7 @@ def search():
         c = json.loads(request.data)['values']
     else:
         c = json.loads(request.data)
-    tweets=indexsearch.search(c['query'],10)
+    tweets=indexsearch.search(c['query'],5)
     # print(tweets)
     json_msg = json.dumps(tweets)
     return Response(json_msg, status=201, mimetype="application/json")

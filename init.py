@@ -3,7 +3,8 @@ import logic.search as indexsearch
 
 def main():
     
-    tweets=indexsearch.search("Ejercicio de educacion eficiente eficiente",10)
+    # pro.generateMergeIndex()
+    tweets=indexsearch.search("el presidente vizcarra interpelacion",10)
     print(tweets)
 
 if __name__ == "__main__":

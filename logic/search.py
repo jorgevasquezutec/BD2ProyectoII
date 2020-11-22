@@ -30,23 +30,31 @@ def getIndexWord(word,obj):
     u = obj[1][1]-1
     while l<=u :
         m=(l+u)//2
-        line=json.loads(linecache.getline(obj[1][0], m)) #objeto {obj:{}}
-        if(list(line.keys())[0]==word):
-            return line
-        elif (list(line.keys())[0]<word):
-            l=m+1
+        prevline=linecache.getline(obj[1][0], m)
+        if len(prevline)!=0:
+            line=json.loads(prevline)
+            if(list(line.keys())[0]==word):
+                return line
+            elif (list(line.keys())[0]<word):
+                l=m+1
+            else:
+                u=m-1
         else:
-            u=m-1
+            break
     return {word:{}}
 
 def search(query, K):
     words = treatData(query)
     freq = countFrequency(words)
     nonDuplicate = list(dict.fromkeys(words))
+    print(nonDuplicate)
     res = []
     for word in nonDuplicate:
         obj = getIndexSearch(word, "index/index.json")
-        res.append(getIndexWord(word, obj))
+        indexword=getIndexWord(word, obj)
+        if list(indexword.values())[0]!={}:
+            res.append(getIndexWord(word, obj))
+    # print(res)
     return calculateScore(res, freq, K)
 
 def calculateScore(words, queryFrequencies, K):

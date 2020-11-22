@@ -13,12 +13,12 @@ $(function () {
               data : makequery,
               dataType:'json',
               success: function(data){
-			results = document.getElementById("results");
-			results.innerHTML = "";
+                results = document.getElementById("results");
+                results.innerHTML = "";
 
-			for (tweet of data) {
-				twttr.widgets.createTweet(tweet, results);
-			}
+                  for (tweet of data) {
+                    twttr.widgets.createTweet(tweet, results);
+                  }
               },   
               error: function(data){
                 // $.growl.error({ message: data.msg});
