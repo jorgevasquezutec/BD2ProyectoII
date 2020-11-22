@@ -24,7 +24,7 @@ import collections
 #blokc=20000
 # W2,(idf(W1)  	Doc1: tf(W2,Doc1), Doc7: tf(W2,Doc7)
 
-def CountFrequency(arr): 
+def countFrequency(arr):
     return collections.Counter(arr)
 
 
@@ -37,13 +37,9 @@ def buildFinalIndex(d,index_file):
         w[data[0]]["tweets"] = {}
         for tweet in data[1]:
             w[data[0]]["tweets"][tweet["tweet"]] = math.log10(1 + tweet['fre'])
-        text+=json.dumps(w,ensure_ascii=False);
-        text+="\n" if i!=len(d.items())-1 else "";
+        text+=json.dumps(w,ensure_ascii=False)
+        text+="\n" if i!=len(d.items())-1 else ""
     finalOutput(index_file,text)
-
-def builSameIndex(d,name):
-    outputData(OUTINDEX+name+".json", d)
-
 
 
 def getFiles(FILES,EXTENSION,BEGIN):
@@ -72,7 +68,7 @@ def createIndex(file):
         idi = r.values[0]
         text = r.values[2]
         data=treatData(text)
-        freq = CountFrequency(data)
+        freq = countFrequency(data)
         for (key, value) in freq.items():
             my_dict = {}
             my_dict["tweet"] = idi
@@ -81,7 +77,7 @@ def createIndex(file):
                 diccionario[key]=[my_dict]
             else:
                 diccionario[key].append(my_dict)
-    
+
     outputData(OUTPUTFILE+name+".json", diccionario)
 
 
@@ -171,9 +167,10 @@ def main():
         if currentWord != lastWord:
             if (len(merge) >= FILE_EXTENSION):
                 buildFinalIndex(merge,of)
-                index_file=index_file+1
                 of = "index/"+str(index_file)+"merge.json"
-                indexKey[list(merge.keys())[0]]=of
+                indexKey[list(merge.keys())[0]]=[of,len(merge)]
+                buildFinalIndex(merge,of)
+                index_file += 1
                 merge = {}
             merge[currentWord] = temp.getCurrentData()[1]
         else:
@@ -182,8 +179,9 @@ def main():
         if (temp.updateCurrent()):
             heapq.heappush(heap, temp)
         lastWord = currentWord
+    of = "index/"+str(index_file)+"merge.json"
     buildFinalIndex(merge,of)
-    indexKey[list(merge.keys())[0]]=of
+    indexKey[list(merge.keys())[0]]=[of,len(merge)]
     outputData("index/index.json",indexKey)
 
 
