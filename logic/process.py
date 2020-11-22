@@ -6,12 +6,10 @@ import os
 from io import StringIO
 from itertools import chain
 from os.path import isfile, join
-
 import pandas as pd
-from nltk import FreqDist, sent_tokenize, word_tokenize  # $ pip install nlt
-
-from constants import *
-from tokenpy import *
+from nltk import FreqDist, sent_tokenize, word_tokenize  
+import logic.constants as cconst
+import logic.tokenpy  as tk
 import collections
 
 
@@ -33,21 +31,21 @@ def buildFinalIndex(d,index_file):
     text=""
     for i,data in enumerate(d.items()):
         w = {data[0] : {}}
-        w[data[0]]["idf"] = math.log10(TWEETCOUNT/len(data[1]))
+        w[data[0]]["idf"] = math.log10(cconst.TWEETCOUNT/len(data[1]))
         w[data[0]]["tweets"] = {}
         for tweet in data[1]:
             w[data[0]]["tweets"][tweet["tweet"]] = math.log10(1 + tweet['fre'])
         text+=json.dumps(w,ensure_ascii=False)
         text+="\n" if i!=len(d.items())-1 else ""
-    finalOutput(index_file,text)
+    tk.finalOutput(index_file,text)
 
 
-def getFiles(FILES,EXTENSION,BEGIN):
+def getFiles(files,extension,begin):
     archivos_txt = []
-    for base, dirs, files in os.walk(FILES):
+    for base, dirs, files in os.walk(files):
         for file in files:
             fich = join(base, file)
-            if fich.endswith(EXTENSION) and BEGIN in fich:
+            if fich.endswith(extension) and begin in fich:
                 archivos_txt.append(fich)
     return archivos_txt
 
@@ -55,9 +53,9 @@ def createChunks(file):
     name=(os.path.splitext(os.path.basename(file))[0])
     with open(file) as infile:
         o = json.load(infile)
-        chunkSize = CHUNKSIZE
+        chunkSize = cconst.CHUNKSIZE
         for i in range(0, len(o), chunkSize):
-            with open(CHUNKFILE+ name+"-"+str(i//chunkSize)+".json", 'w') as outfile:
+            with open(cconst.CHUNKFILE+ name+"-"+str(i//chunkSize)+".json", 'w') as outfile:
                 json.dump(o[i:i+chunkSize], outfile)
 
 def createIndex(file):
@@ -67,7 +65,7 @@ def createIndex(file):
     for i, r in df.iterrows():
         idi = r.values[0]
         text = r.values[2]
-        data=treatData(text)
+        data=tk.treatData(text)
         freq = countFrequency(data)
         for (key, value) in freq.items():
             my_dict = {}
@@ -78,14 +76,14 @@ def createIndex(file):
             else:
                 diccionario[key].append(my_dict)
 
-    outputData(OUTPUTFILE+name+".json", diccionario)
+    tk.outputData(cconst.OUTPUTFILE+name+".json", diccionario)
 
 
 class IndexFile:
 
     def __init__(self, nameFile):
         self.name = nameFile
-        self.iterator = iter(pd.read_json(nameFile, lines=True, chunksize=BLOCK))
+        self.iterator = iter(pd.read_json(nameFile, lines=True, chunksize=cconst.BLOCK))
         self.data = next(self.iterator,None)#dataframe
         self.current = 0
 
@@ -133,15 +131,20 @@ def show_tree(tree, total_width=60, fill=' '):
     print ('-' * total_width)
     return
 
-def main():
-    # files = getFiles(FILES,EXTENSION,BEGIN)
-    # for file in files:
-    #     createChunks(file)
-    # chunks=getFiles(CHUNKFILE,EXTENSION,BEGIN)
-    # for cnt,file in enumerate(chunks):
-    #     createIndex(file)
 
-    indexFile=getFiles(OUTPUTFILE,EXTENSIONOUT,"tweets")
+def generateChunks():
+    files = getFiles(cconst.FILES,cconst.EXTENSION,cconst.BEGIN)
+    for file in files:
+        createChunks(file)
+
+def generateInvertedIndexChunks():
+    chunks=getFiles(cconst.CHUNKFILE,cconst.EXTENSION,cconst.BEGIN)
+    for cnt,file in enumerate(chunks):
+        createIndex(file)
+
+def generateMergeIndex():
+
+    indexFile=getFiles(cconst.OUTPUTFILE,cconst.EXTENSIONOUT,"tweets")
     # print(len(indexFile))
     objectIndex=[]
     for file in indexFile:
@@ -165,7 +168,7 @@ def main():
         currentWord = temp.getWord()
 
         if currentWord != lastWord:
-            if (len(merge) >= FILE_EXTENSION):
+            if (len(merge) >= cconst.FILE_EXTENSION):
                 buildFinalIndex(merge,of)
                 of = "index/"+str(index_file)+"merge.json"
                 indexKey[list(merge.keys())[0]]=[of,len(merge)]
@@ -182,71 +185,10 @@ def main():
     of = "index/"+str(index_file)+"merge.json"
     buildFinalIndex(merge,of)
     indexKey[list(merge.keys())[0]]=[of,len(merge)]
-    outputData("index/index.json",indexKey)
-
-
-    #tenngo que crear un minhead solo con el word
-
-if __name__ == "__main__":
-    main()
+    tk.outputData("index/index.json",indexKey)
 
 
 
 
-
-
-
-# def mergeTables(self):
-# 		class TableClass:
-# 			def __init__(self, tableName):
-# 				self.name = tableName
-# 				self.sizeOfChunk = SORTED_CHUNK
-# 				self.last = False
-# 				self.empty = False
-# 				self.iteration = 0
-# 				self.orderedList = (pd.read_csv(tableName,skiprows = self.iteration, nrows = self.sizeOfChunk)).values.tolist()
-# 				self.size = len(pd.read_csv(tableName))
-
-# 			def getFirst(self):
-# 				return self.orderedList[0][0]
-
-# 			def __lt__(self,other):
-# 				return str(self.getFirst()) < str(other.getFirst())
-
-# 			def updateList(self):
-# 				self.iteration += 1
-# 				if((self.iteration+1)*self.sizeOfChunk-1 >= self.size):
-# 					self.last = True
-# 				skip = self.iteration * self.sizeOfChunk
-# 				self.orderedList = (pd.read_csv(self.name,skiprows = skip, nrows = self.sizeOfChunk)).values.tolist()
-
-# 			def popFirst(self):
-# 				value = self.orderedList.pop(0)
-# 				if(len(self.orderedList) == 0 and self.last == True):
-# 					self.empty = True
-# 				elif(len(self.orderedList) == 0):
-# 					self.updateList()
-# 				return value
-
-# 		tableClasses = []
-# 		for i in os.listdir(PATH + 'chunks'):
-# 			if i.endswith('tf_df.csv'):
-# 				tableClasses.append(TableClass(PATH + 'chunks/'+ i))
-
-# 		heapq.heapify(tableClasses)
-# 		while(len(tableClasses) > 0):
-# 			tmp = []
-# 			tmp = tableClasses[0].popFirst()
-# 			tmp[1] = ast.literal_eval(tmp[1])
-# 			while(tableClasses[0].empty == True):
-# 				tableClasses.pop(0)
-# 			heapq.heapify(tableClasses)
-# 			while(tableClasses[0].getFirst() == tmp[0]):
-# 				tmp[1].update(ast.literal_eval(tableClasses[0].popFirst()[1]))
-# 				while(tableClasses[0].empty == True):
-# 					tableClasses.pop(0)
-# 				heapq.heapify(tableClasses)
-# 			self.writeLine(PATH + "merged.csv",tmp)
-# 			heapq.heapify(tableClasses)
 
 

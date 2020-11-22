@@ -1,9 +1,9 @@
 import linecache
 from math import frexp
-from tokenpy import treatData
+from logic.tokenpy import *
+from logic.process import *
 import pandas as pd
 import json
-from process import *
 import math
 
 def getIndexSearch(word,file):
@@ -47,7 +47,7 @@ def search(query, K):
     for word in nonDuplicate:
         obj = getIndexSearch(word, "index/index.json")
         res.append(getIndexWord(word, obj))
-    calculateScore(res, freq, K)
+    return calculateScore(res, freq, K)
 
 def calculateScore(words, queryFrequencies, K):
     columns = []
@@ -104,4 +104,4 @@ def calculateScore(words, queryFrequencies, K):
 
     return sortedTweets[:K]
 
-search("Ejercicio de educacion eficiente eficiente")
+# search("Ejercicio de educacion eficiente eficiente",10)

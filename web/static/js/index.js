@@ -1,11 +1,6 @@
 $(function () {
     
-    var csrftoken = getCookie('csrftoken');
-    request_data = {
-        'searchTerms': document.getElementById("query").value,
-        'csrfmiddlewaretoken': csrftoken
-    }
-
+   
     $('#search').click(function() {
         var query = $("#query").val();
         var makequery = JSON.stringify({
@@ -18,7 +13,12 @@ $(function () {
               data : makequery,
               dataType:'json',
               success: function(data){
-                    console.log(data.msg)
+			results = document.getElementById("results");
+			results.innerHTML = "";
+
+			for (tweet of data) {
+				twttr.widgets.createTweet(tweet, results);
+			}
               },   
               error: function(data){
                 // $.growl.error({ message: data.msg});
@@ -28,22 +28,3 @@ $(function () {
       });
 
 });
-
-
-
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
