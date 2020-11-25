@@ -71,6 +71,7 @@ def finalOutput(outputfile, data):
         out.reconfigure(encoding='utf-8')
     else:
         out = open(outputfile, 'a')
+        out.reconfigure(encoding='utf-8')
 
     print(data, file=out)
 

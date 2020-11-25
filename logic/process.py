@@ -7,7 +7,7 @@ from io import StringIO
 from itertools import chain
 from os.path import isfile, join
 import pandas as pd
-from nltk import FreqDist, sent_tokenize, word_tokenize  
+from nltk import FreqDist, sent_tokenize, word_tokenize
 import logic.constants as cconst
 import logic.tokenpy  as tk
 import collections
@@ -170,10 +170,9 @@ def generateMergeIndex():
         if currentWord != lastWord:
             if (len(merge) >= cconst.FILE_EXTENSION):
                 buildFinalIndex(merge,of)
-                of = "index/"+str(index_file)+"merge.json"
                 indexKey[list(merge.keys())[0]]=[of,len(merge)]
-                buildFinalIndex(merge,of)
                 index_file += 1
+                of = "index/"+str(index_file)+"merge.json"
                 merge = {}
             merge[currentWord] = temp.getCurrentData()[1]
         else:

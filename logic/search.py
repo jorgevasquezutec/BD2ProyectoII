@@ -2,6 +2,7 @@ import linecache
 from math import frexp
 from logic.tokenpy import *
 from logic.process import *
+import numpy as np
 import pandas as pd
 import json
 import math
@@ -54,8 +55,15 @@ def search(query, K):
         indexword=getIndexWord(word, obj)
         if list(indexword.values())[0]!={}:
             res.append(getIndexWord(word, obj))
-    # print(res)
     return calculateScore(res, freq, K)
+
+def cos_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+def calc_cos_similar(df, tweet, query):
+    v1 = df[tweet].to_numpy()
+    v2 = query.to_numpy()
+    return cos_similarity(v1, v2)
 
 def calculateScore(words, queryFrequencies, K):
     columns = []
@@ -86,30 +94,14 @@ def calculateScore(words, queryFrequencies, K):
         idf =  idfs[word]
         q.append(tf*idf)
 
-    df['Query'] = q
+    q = pd.DataFrame(q)
 
-    norm = {}
-    for col in df.columns:
-        acum = 0
-        for row in df.index:
-            acum += (df[col][row]**2)
-        norm[col] = math.sqrt(acum)
-
-    for col in df.columns:
-        nlize = []
-        for row in df.index:
-            nlize.append(df[col][row]/norm[col])
-        df[f"nlize {col}"] = nlize
-
-    scores = {}
+    score = {}
     for tweet in columns:
-        scores[tweet] = 0
-        for row in df.index:
-            scores[tweet] += df[f"nlize {tweet}"][row] * df["nlize Query"][row]
+        score[tweet] = calc_cos_similar(df, tweet, q)
 
-    # Resalta como error pero si corre
-    sortedTweets = sorted(scores, reverse= True, key = scores.get)
-
+    sortedTweets = sorted(score, reverse= True, key = score.get)
+    print(sortedTweets[:K])
     return sortedTweets[:K]
 
 # search("Ejercicio de educacion eficiente eficiente",10)
