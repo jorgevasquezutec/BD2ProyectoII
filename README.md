@@ -28,7 +28,6 @@ La complejidad de una Query es igual a O( m (log( K ) + log( S ))) . Donde K es 
 
 ## Futuras Mejoras
 
-Se podria mejorar de calculo de Score e insercion de indices implementandolo con una estructura de datos Max-Heap en lugar de Min-Heap y la complejidad pasaria a ser O(N) donde N es la cantidad de inicial de indices.
 
 ## Guia para ejecutar
 
