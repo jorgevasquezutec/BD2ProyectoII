@@ -25,9 +25,15 @@ Se explicara como nuestro motor de busqueda realiza una consulta. Primero, para 
 La complejidad de una Query es igual a O( m (log( K ) + log( S ))) . Donde K es la cantidad de archivos de indices que hay,  S es la cantidad maxima de indices por archivo y  'm' es la cantidad de palabras en la consulta. 
 
 
+## Requisitos
 
-## Futuras Mejoras
+* Flask
 
+* FlaskCors
+
+* Python
+
+* Servidor local para cargar pagina
 
 ## Guia para ejecutar
 
@@ -44,6 +50,10 @@ Para observar el proyecto dirijase a la siguiente direccion de su servidor local
 127.0.0.1:5000
 ```
 
+## Requisitos
+* [Primer Video](https://www.youtube.com/watch?v=TArJYOTmYt8&feature=youtu.be)
+
+* [Segundo Video](https://www.youtube.com/watch?v=77B7T_GNKPI)
 ## Imagenes del Motor de busqueda
 
 ![imagen1](images/imagen1.png)
