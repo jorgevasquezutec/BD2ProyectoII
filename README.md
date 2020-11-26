@@ -7,9 +7,9 @@ Se proceso cada Tweet para eliminar cada palabra de la lista de Stopwords, emoti
 
 ## Gestion de Memoria Secundaria
 
-Como no se puede leer todos los indices de todos los archivos a la vez, creamos una cola de prioridad de punteros que apuntan al primer indice de cada archivo. Ademas, creamos un arbol Min Heap en el cual se insertara el primer elemento de la cola de prioridad, mientras la cola no este vacia. 
+Como no se puede leer todos los indices de todos los archivos a la vez, creamos un objeto  que contiene a los punteros que apuntan al primer indice de cada archivo. Ademas, creamos una estructura de datos arbol Min Heap en el cual se iran insertando los punteros de cada archivo, mientras la cola no este vacia. Inicialmente al Min Heap se le inserta el puntero al primer indice de cada archivo. Despues,  cuando el min heap este completo(se haya insertado un puntero por archivo), se elimina el puntero que esta en el root del Min Heap(indice con word lexicograficamente menor) y se anade este puntero al diccionario Merge. Asimismo, se agrega al Min Heap el puntero que apunta al indice siguiente al indice que se acaba de eliminar. (falta...)
 
-Una vez se inserte un indice de la cola de prioridad al Min Heap, el puntero que apuntaba a ese indice pasara a apuntar al siguiente elemento de su respectivo archivo. Es asi que la complejidad de formar la lista final de indices sera O( N log ( N / S ) ) donde S es la maxima cantidad de indices puede tener cada archivo final de indices y N es la cantidad inicial de indices 
+Cuando se inserte un indice del objeto que contiene a los punteros al Min Heap, el puntero que apuntaba a ese indice pasara a apuntar al siguiente elemento de su respectivo archivo. Es asi que la complejidad de formar la lista final de indices sera O( N log ( N / S ) ) donde S es la maxima cantidad de indices puede tener cada archivo final de indices y N es la cantidad inicial de indices 
 
 ![MinHeap](images/minheap.jpg)
 
@@ -47,7 +47,7 @@ python3 init.py
 Para observar el proyecto dirijase a la siguiente direccion de su servidor local.
 
 ```sh
-127.0.0.1:5000
+127.0.0.1:8080
 ```
 
 ## Videos
