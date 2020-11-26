@@ -1,3 +1,7 @@
+# Victor Ostolaza
+# Jorge Vasquez
+# Jorge Rebosio
+
 # Proyecto 2 de Base de Datos
 
 En este proyecto , se construyó el índice invertido para tweets, en memoria secundaria. Además se construyo un montor de busqueda, para realizar consultas eficientes de terminos dentro de los tweets, y recuperar los tweets.  
