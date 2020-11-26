@@ -50,7 +50,7 @@ Para observar el proyecto dirijase a la siguiente direccion de su servidor local
 127.0.0.1:5000
 ```
 
-## Requisitos
+## Videos
 * [Primer Video](https://www.youtube.com/watch?v=TArJYOTmYt8&feature=youtu.be)
 
 * [Segundo Video](https://www.youtube.com/watch?v=77B7T_GNKPI)
