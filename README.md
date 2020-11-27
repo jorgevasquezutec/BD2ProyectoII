@@ -10,7 +10,7 @@
 
 
 ## Descripcion
-En este proyecto , se construyó el índice invertido para tweets de forma eficiente, en memoria secundaria. Además, se construyó un montor de búsqueda, para realizar consultas eficientes de términos dentro de los tweets, y recuperar los tweets.  
+En este proyecto  se construyó el índice invertido para tweets de forma eficiente, en memoria secundaria. Además, se construyó un montor de búsqueda, para realizar consultas eficientes de términos dentro de los tweets, y recuperar los tweets.  
 
 ## Cargar Tweets
 Como la cantidad de Tweets en de cada archivo de Tweets es mucha, traer toda la información de un archivo a RAM sería ineficiente. Por esa razón, se crea la funcion llamada `CreateChunks`, que recibe un archivo de Tweets como parámetro. Esta función parte cada archivo de Tweets en archivos más pequenos, que a lo máximo tendrán 2000 Tweets. Ahora que se tienen archivos pequenos de Tweets , es más eficiente traer los datos a RAM para crear el Indice Invertido. Por eso, una vez terminado el proceso de CreateChucks, se pasará a preprocesar los Tweets y  crear los archivos de Indice Invertido. 
